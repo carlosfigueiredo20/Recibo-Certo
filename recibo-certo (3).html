@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recibo Certo — Relatórios fiscais para trabalhadores independentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#122036;
+    --ink-soft:#425067;
+    --paper:#FAF7F0;
+    --paper-alt:#F1ECDF;
+    --stamp:#C1442D;
+    --stamp-soft:#F3DAD3;
+    --mint:#3E8577;
+    --mint-soft:#DCEAE6;
+    --line:rgba(18,32,54,.13);
+    --white:#fff;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Inter', sans-serif; line-height:1.55;
+  }
+  h1,h2,h3{font-family:'Instrument Serif', serif; font-weight:400; margin:0 0 .35em; letter-spacing:-.01em;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:inherit;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; text-transform:uppercase;
+    letter-spacing:.12em; font-size:.72rem; color:var(--stamp); font-weight:600;
+  }
+  ::selection{background:var(--stamp-soft);}
+
+  nav{
+    position:sticky; top:0; z-index:60;
+    background:rgba(250,247,240,.92); backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:.9rem 1.6rem;
+  }
+  .brand{display:flex; align-items:center; gap:.5rem; font-weight:700; font-size:1.05rem; font-family:'Inter',sans-serif;}
+  .brand .dot{width:9px; height:9px; border-radius:2px; background:var(--stamp); display:inline-block; transform:rotate(45deg);}
+  .navlinks{display:flex; align-items:center; gap:1.5rem;}
+  .navlinks a{font-size:.88rem; font-weight:500; text-decoration:none;}
+  .navlinks a:hover{color:var(--stamp);}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:.5rem;
+    padding:.72rem 1.25rem; border-radius:5px; font-weight:600; font-size:.92rem;
+    text-decoration:none; border:1.5px solid transparent; cursor:pointer;
+    font-family:'Inter', sans-serif; transition:transform .15s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--stamp); color:var(--paper);}
+  .btn-primary:hover{box-shadow:0 6px 18px rgba(193,68,45,.3);}
+  .btn-ghost{background:transparent; color:var(--ink); border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--ink);}
+  .btn-dark{background:var(--ink); color:var(--paper);}
+  .btn-dark:hover{box-shadow:0 6px 18px rgba(18,32,54,.3);}
+  a:focus-visible, button:focus-visible, summary:focus-visible{outline:3px solid var(--stamp); outline-offset:2px;}
+
+  section{padding:5rem 1.6rem;}
+  .wrap{max-width:1040px; margin:0 auto;}
+  .section-head{max-width:600px; margin-bottom:2.6rem;}
+  .section-head h2{font-size:clamp(1.7rem,3.6vw,2.4rem);}
+  .center{text-align:center; margin-left:auto; margin-right:auto;}
+
+  /* HERO */
+  .hero{padding-top:4.5rem; padding-bottom:3rem;}
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:3rem; align-items:center;}
+  .hero h1{font-size:clamp(2.2rem,4.6vw,3.3rem); max-width:15ch;}
+  .hero .lede{font-size:1.15rem; color:var(--ink-soft); max-width:44ch; margin-bottom:1.8rem;}
+  .hero-cta{display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:1rem;}
+  .hero-note{font-size:.8rem; color:var(--ink-soft);}
+
+  /* Signature mock report */
+  .report-mock{
+    background:var(--white); border:1px solid var(--line); border-radius:10px;
+    box-shadow:0 20px 50px rgba(18,32,54,.1);
+    padding:1.4rem 1.5rem; position:relative; max-width:380px; margin:0 auto;
+  }
+  .report-mock .rm-head{display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px dashed var(--line); padding-bottom:.7rem; margin-bottom:.8rem;}
+  .report-mock .rm-head b{font-family:'Instrument Serif',serif; font-size:1.15rem;}
+  .report-mock .rm-head span{font-size:.7rem; color:var(--ink-soft);}
+  .rm-row{display:flex; justify-content:space-between; font-size:.85rem; padding:.4rem 0; opacity:0; animation:rowIn .5s ease forwards;}
+  .rm-row:nth-child(2){animation-delay:.15s;}
+  .rm-row:nth-child(3){animation-delay:.35s;}
+  .rm-row:nth-child(4){animation-delay:.55s;}
+  .rm-row .k{color:var(--ink-soft);}
+  .rm-total{display:flex; justify-content:space-between; border-top:1px solid var(--line); margin-top:.6rem; padding-top:.7rem; font-weight:700;}
+  .stamp-badge{
+    position:absolute; top:1.3rem; right:1.3rem; border:2px solid var(--mint); color:var(--mint);
+    font-family:'IBM Plex Mono',monospace; font-size:.65rem; font-weight:700; letter-spacing:.08em;
+    padding:.25rem .5rem; border-radius:4px; transform:rotate(6deg);
+    opacity:0; animation:stampIn .3s ease forwards .9s;
+  }
+  @keyframes rowIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+  @keyframes stampIn{from{opacity:0; transform:rotate(6deg) scale(1.4);} to{opacity:1; transform:rotate(6deg) scale(1);}}
+  @media (prefers-reduced-motion: reduce){
+    .rm-row, .stamp-badge{animation:none !important; opacity:1 !important;}
+  }
+
+  /* PROBLEMS */
+  #problema{background:var(--paper-alt);}
+  .prob-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.4rem;}
+  .prob-card{background:var(--white); border:1px solid var(--line); border-radius:8px; padding:1.5rem 1.4rem;}
+  .prob-card .glyph{font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--stamp); margin-bottom:.7rem;}
+  .prob-card h3{font-size:1.05rem; margin-bottom:.35rem;}
+  .prob-card p{font-size:.9rem; color:var(--ink-soft); margin:0;}
+
+  /* HOW IT WORKS */
+  .timeline{list-style:none; margin:0; padding:0; counter-reset:step; display:grid; gap:1.6rem;}
+  .timeline li{
+    counter-increment:step; display:grid; grid-template-columns:auto 1fr; gap:1.2rem; align-items:start;
+  }
+  .timeline li::before{
+    content:counter(step,decimal-leading-zero);
+    width:2.4rem; height:2.4rem; border-radius:50%; background:var(--ink); color:var(--paper);
+    display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:.8rem; font-weight:600;
+    flex-shrink:0;
+  }
+  .timeline li h3{font-size:1.1rem; margin-bottom:.25rem;}
+  .timeline li p{margin:0; color:var(--ink-soft); font-size:.92rem; max-width:52ch;}
+
+  /* PRICING */
+  #precos{background:var(--paper-alt);}
+  .toggle-row{display:flex; align-items:center; justify-content:center; gap:.8rem; margin-bottom:2.6rem;}
+  .toggle-row span{font-size:.88rem; font-weight:500; color:var(--ink-soft);}
+  .toggle-row span.active{color:var(--ink); font-weight:700;}
+  .switch{
+    width:46px; height:26px; background:var(--ink); border-radius:99px; border:none; cursor:pointer;
+    position:relative; padding:0;
+  }
+  .switch .knob{
+    position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:var(--paper);
+    transition:transform .2s ease;
+  }
+  .switch.on .knob{transform:translateX(20px);}
+  .save-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:.7rem; background:var(--mint-soft); color:var(--mint);
+    padding:.15rem .45rem; border-radius:4px; font-weight:600;
+  }
+  .price-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1.4rem; align-items:stretch;}
+  .price-card{
+    background:var(--white); border:1px solid var(--line); border-radius:10px; padding:1.8rem 1.5rem;
+    display:flex; flex-direction:column;
+  }
+  .price-card.featured{
+    border-color:var(--stamp); box-shadow:0 16px 40px rgba(193,68,45,.16); position:relative;
+  }
+  .badge-pop{
+    position:absolute; top:-.7rem; left:1.5rem; background:var(--stamp); color:var(--paper);
+    font-family:'IBM Plex Mono',monospace; font-size:.65rem; font-weight:700; letter-spacing:.06em;
+    padding:.25rem .55rem; border-radius:4px;
+  }
+  .price-card h3{font-size:1.2rem; margin-bottom:.2rem;}
+  .price-card .desc{font-size:.85rem; color:var(--ink-soft); margin-bottom:1.2rem; min-height:2.6em;}
+  .price-num{display:flex; align-items:baseline; gap:.3rem; margin-bottom:1.4rem;}
+  .price-num .val{font-family:'IBM Plex Mono',monospace; font-size:2.1rem; font-weight:600;}
+  .price-num .per{font-size:.85rem; color:var(--ink-soft);}
+  .price-feats{list-style:none; margin:0 0 1.6rem; padding:0; display:grid; gap:.6rem; flex:1;}
+  .price-feats li{font-size:.88rem; display:flex; gap:.55rem; align-items:flex-start;}
+  .price-feats li::before{content:"✓"; color:var(--mint); font-weight:700; flex-shrink:0;}
+  .price-card .btn{justify-content:center; width:100%;}
+
+  /* PAGAMENTOS E SAQUES */
+  #pagamentos{background:var(--ink); color:var(--paper);}
+  #pagamentos .eyebrow{color:var(--stamp-soft);}
+  #pagamentos .section-head h2{color:var(--white);}
+  #pagamentos .section-head p{color:rgba(250,247,240,.72);}
+  .placeholder-notice{
+    background:rgba(193,68,45,.16); border:1px solid rgba(193,68,45,.4); color:var(--paper);
+    border-radius:8px; padding:.9rem 1.2rem; font-size:.85rem; margin-bottom:2rem;
+  }
+  .cards-row{display:flex; gap:.7rem; flex-wrap:wrap; margin-bottom:2.6rem;}
+  .card-badge{
+    background:rgba(250,247,240,.08); border:1px solid rgba(250,247,240,.22);
+    border-radius:6px; padding:.6rem 1.1rem; font-family:'IBM Plex Mono',monospace;
+    font-size:.82rem; font-weight:600; letter-spacing:.03em;
+  }
+  .card-badge.soon{opacity:.55;}
+  .bank-grid{display:grid; grid-template-columns:1fr 1fr; gap:1.2rem;}
+  .bank-card{
+    background:rgba(250,247,240,.06); border:1px solid rgba(250,247,240,.18);
+    border-radius:8px; padding:1.2rem 1.3rem;
+  }
+  .bank-card h3{font-size:1rem; color:var(--white); margin-bottom:.7rem; font-family:'Inter',sans-serif; font-weight:700;}
+  .bank-card .row{display:flex; justify-content:space-between; align-items:center; gap:.6rem; margin-bottom:.45rem;}
+  .bank-card .lbl{font-size:.68rem; opacity:.6; text-transform:uppercase; letter-spacing:.08em;}
+  .bank-card .val{font-family:'IBM Plex Mono',monospace; font-size:.86rem;}
+  .copy-btn{
+    background:transparent; border:1px solid rgba(250,247,240,.4); color:var(--paper);
+    border-radius:4px; padding:.32rem .55rem; font-size:.7rem; cursor:pointer;
+    font-family:'Inter',sans-serif; transition:background .2s ease; flex-shrink:0;
+  }
+  .copy-btn:hover{background:rgba(250,247,240,.15);}
+  .copy-btn.copied{background:var(--stamp); border-color:var(--stamp); color:var(--paper);}
+  .withdraw-note{font-size:.82rem; opacity:.7; margin-top:1.8rem; max-width:60ch;}
+
+  /* DEPOIMENTOS */
+  .quote-grid{display:grid; grid-template-columns:1fr 1fr; gap:1.4rem;}
+  .quote-card{background:var(--white); border:1px solid var(--line); border-radius:8px; padding:1.5rem 1.6rem;}
+  .quote-card p{font-family:'Instrument Serif', serif; font-style:italic; font-size:1.15rem; margin:0 0 .9rem;}
+  .quote-who{font-size:.82rem; color:var(--ink-soft); font-family:'Inter',sans-serif; font-style:normal;}
+
+  /* FAQ */
+  .faq-list{display:grid; gap:.8rem; max-width:760px;}
+  details{background:var(--white); border:1px solid var(--line); border-radius:8px; padding:1rem 1.3rem;}
+  summary{cursor:pointer; font-weight:600; list-style:none; display:flex; justify-content:space-between; align-items:center;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"+"; font-family:'IBM Plex Mono',monospace; font-size:1.2rem; color:var(--stamp);}
+  details[open] summary::after{content:"–";}
+  details p{margin:.8rem 0 0; color:var(--ink-soft); font-size:.92rem;}
+
+  /* FINAL CTA */
+  .final-cta{
+    background:var(--ink); color:var(--paper); border-radius:14px; padding:3.2rem 2rem;
+    text-align:center; margin:0 1.6rem;
+  }
+  .final-cta h2{color:var(--white); font-size:clamp(1.8rem,3.6vw,2.4rem); max-width:18ch; margin-left:auto; margin-right:auto;}
+  .final-cta p{color:rgba(250,247,240,.75); max-width:40ch; margin:0 auto 1.6rem;}
+
+  footer{
+    text-align:center; padding:2.4rem 1.6rem; font-size:.8rem; color:var(--ink-soft);
+  }
+
+  /* MODAL */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(18,32,54,.55); display:none;
+    align-items:center; justify-content:center; z-index:100; padding:1.2rem;
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{
+    background:var(--paper); border-radius:10px; padding:1.8rem; max-width:380px; width:100%;
+    position:relative; box-shadow:0 30px 70px rgba(0,0,0,.3);
+  }
+  .modal h3{margin-bottom:.3rem;}
+  .modal .plan-tag{font-family:'IBM Plex Mono',monospace; font-size:.75rem; color:var(--stamp); margin-bottom:1rem; display:block;}
+  .modal label{display:block; font-size:.82rem; font-weight:600; margin-bottom:.3rem; margin-top:.9rem;}
+  .modal input{
+    width:100%; padding:.6rem .7rem; border:1px solid var(--line); border-radius:5px; font-family:'Inter',sans-serif; font-size:.92rem;
+  }
+  .modal input:focus-visible{outline:2px solid var(--stamp);}
+  .modal .btn{width:100%; justify-content:center; margin-top:1.4rem;}
+  .modal-close{
+    position:absolute; top:.9rem; right:1rem; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-soft); padding:.2rem;
+  }
+  .confirm-box{display:none; text-align:center; padding:.6rem 0;}
+  .confirm-box.show{display:block;}
+  .confirm-box .check{font-size:2rem; color:var(--mint); margin-bottom:.4rem;}
+
+  @media (max-width: 860px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero .report-mock{margin-top:2rem;}
+    .prob-grid, .price-grid, .quote-grid{grid-template-columns:1fr;}
+    .navlinks{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand"><span class="dot"></span> Recibo Certo</div>
+  <div class="navlinks">
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#precos">Preços</a>
+    <a href="#pagamentos">Pagamentos</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <button class="btn btn-primary" onclick="openModal('Profissional')">Começar agora</button>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Para trabalhadores independentes</p>
+      <h1>O seu relatório fiscal, pronto antes do prazo</h1>
+      <p class="lede">Ligue os seus recibos e despesas, e o Recibo Certo organiza tudo em relatórios prontos para o IVA trimestral e o IRS anual — sem folhas de cálculo, sem stress de última hora.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" onclick="openModal('Profissional')">Começar agora</button>
+        <a class="btn btn-ghost" href="#como-funciona">Ver como funciona</a>
+      </div>
+      <p class="hero-note">Sem cartão de crédito para experimentar · Cancele quando quiser</p>
+    </div>
+    <div class="report-mock" aria-hidden="true">
+      <div class="rm-head">
+        <b>Relatório · 3º Trimestre</b>
+        <span>Gerado automaticamente</span>
+      </div>
+      <div class="rm-row"><span class="k">Recibos verdes emitidos</span><span>18</span></div>
+      <div class="rm-row"><span class="k">Despesas dedutíveis</span><span>€ 612,40</span></div>
+      <div class="rm-row"><span class="k">IVA a entregar</span><span>€ 340,15</span></div>
+      <div class="rm-total"><span>Pronto para submissão</span><span>✓</span></div>
+      <div class="stamp-badge">PRONTO</div>
+    </div>
+  </div>
+</header>
+
+<section id="problema">
+  <div class="wrap">
+    <div class="section-head center">
+      <p class="eyebrow">O problema</p>
+      <h2>Quem trabalha por conta própria perde tempo (e dinheiro) com burocracia</h2>
+    </div>
+    <div class="prob-grid">
+      <div class="prob-card">
+        <div class="glyph">01</div>
+        <h3>Recibos espalhados</h3>
+        <p>Faturas em emails, apps e papel — na hora da declaração, ninguém sabe onde está o quê.</p>
+      </div>
+      <div class="prob-card">
+        <div class="glyph">02</div>
+        <h3>Prazos que fogem</h3>
+        <p>O trimestre do IVA chega sem aviso e a correria de última hora vira rotina.</p>
+      </div>
+      <div class="prob-card">
+        <div class="glyph">03</div>
+        <h3>Cálculos errados</h3>
+        <p>Um erro na categorização de despesas pode significar multa — ou pagar mais imposto do que devia.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="como-funciona">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Como funciona</p>
+      <h2>Três passos entre o recibo e o relatório pronto</h2>
+    </div>
+    <ol class="timeline">
+      <li>
+        <div>
+          <h3>Emita ou importe os seus recibos</h3>
+          <p>Ligue a sua conta de recibos verdes ou carregue faturas e despesas manualmente — o sistema aceita ambos.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>O sistema categoriza tudo automaticamente</h3>
+          <p>Cada recibo e despesa é classificado nas categorias certas para IVA e IRS, sem folha de cálculo.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Receba o relatório pronto para entregar</h3>
+          <p>PDF organizado, com os valores já calculados, pronto para si ou para o seu contabilista.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section id="precos">
+  <div class="wrap">
+    <div class="section-head center">
+      <p class="eyebrow">Preços</p>
+      <h2>Um plano para cada fase do seu trabalho independente</h2>
+    </div>
+
+    <div class="toggle-row">
+      <span id="label-mensal" class="active">Mensal</span>
+      <button class="switch" id="billing-switch" onclick="toggleBilling()" aria-label="Alternar entre cobrança mensal e anual"><span class="knob"></span></button>
+      <span id="label-anual">Anual</span>
+      <span class="save-tag">−15% no anual</span>
+    </div>
+
+    <div class="price-grid">
+      <div class="price-card">
+        <h3>Básico</h3>
+        <p class="desc">Para quem está a começar como independente.</p>
+        <div class="price-num"><span class="val mono" data-monthly="9" data-annual="7.65">9€</span><span class="per">/mês</span></div>
+        <ul class="price-feats">
+          <li>Até 20 recibos por mês</li>
+          <li>Relatório trimestral de IVA</li>
+          <li>Exportação em PDF</li>
+        </ul>
+        <button class="btn btn-ghost" onclick="openModal('Básico')">Escolher Básico</button>
+      </div>
+
+      <div class="price-card featured">
+        <span class="badge-pop">Mais escolhido</span>
+        <h3>Profissional</h3>
+        <p class="desc">Para quem factura todos os meses e não quer surpresas.</p>
+        <div class="price-num"><span class="val mono" data-monthly="19" data-annual="16.15">19€</span><span class="per">/mês</span></div>
+        <ul class="price-feats">
+          <li>Recibos ilimitados</li>
+          <li>Relatório trimestral de IVA + anual de IRS</li>
+          <li>Categorização automática de despesas</li>
+          <li>Alertas de prazos por email</li>
+        </ul>
+        <button class="btn btn-primary" onclick="openModal('Profissional')">Escolher Profissional</button>
+      </div>
+
+      <div class="price-card">
+        <h3>Contabilista</h3>
+        <p class="desc">Para contabilistas com vários clientes independentes.</p>
+        <div class="price-num"><span class="val mono" data-monthly="29" data-annual="24.65">29€</span><span class="per">/mês</span></div>
+        <ul class="price-feats">
+          <li>Tudo do plano Profissional</li>
+          <li>Gestão de múltiplos clientes</li>
+          <li>Exportação para software de contabilidade</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <button class="btn btn-ghost" onclick="openModal('Contabilista')">Escolher Contabilista</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pagamentos">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Pagamentos e saques</p>
+      <h2>Como pagar a subscrição</h2>
+      <p>Pague por cartão ou por transferência bancária direta — escolha o que for mais prático para si.</p>
+    </div>
+
+    <div class="placeholder-notice">
+      ⚠️ Esta seção está com dados de exemplo. Substitua os IBANs, titulares e o link do cartão pelos seus dados reais antes de publicar o site.
+    </div>
+
+    <p class="lbl" style="font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; opacity:.65; margin-bottom:.6rem;">Pagamento por cartão</p>
+    <div class="cards-row">
+      <span class="card-badge">VISA</span>
+      <span class="card-badge">Mastercard</span>
+      <span class="card-badge soon">Multicaixa Express (em breve)</span>
+      <span class="card-badge soon">MB WAY (em breve)</span>
+    </div>
+
+    <p class="lbl" style="font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; opacity:.65; margin-bottom:.9rem;">Transferência bancária</p>
+    <div class="bank-grid">
+      <div class="bank-card">
+        <h3>Banco BAI</h3>
+        <div class="row">
+          <div><div class="lbl">IBAN</div><div class="val" id="iban1">AO06 0040 0000 9901 6851 0117</div></div>
+          <button class="copy-btn" onclick="copyIban('iban1', this)">Copiar</button>
+        </div>
+        <div class="lbl">Titular</div>
+        <div class="val">Carlos Sumbelelo Cussenha Figueiredo</div>
+      </div>
+      <div class="bank-card">
+        <h3>Banco BPC</h3>
+        <div class="row">
+          <div><div class="lbl">IBAN</div><div class="val" id="iban2">AO06 0010 0501 0333 4801 0110 2</div></div>
+          <button class="copy-btn" onclick="copyIban('iban2', this)">Copiar</button>
+        </div>
+        <div class="lbl">Titular</div>
+        <div class="val">Carlos Sumbelelo C. Figueiredo</div>
+      </div>
+    </div>
+    <p class="withdraw-note">Para levantamentos e gestão dos valores recebidos, recomenda-se ligar uma conta Payoneer ou Wise Business às contas acima, já que processadores como Stripe e PayPal não suportam contas empresariais abertas em Angola.</p>
+  </div>
+</section>
+
+<section id="depoimentos">
+  <div class="wrap">
+    <div class="section-head center">
+      <p class="eyebrow">Quem já usa</p>
+      <h2>Feito para o dia a dia de quem trabalha por conta própria</h2>
+    </div>
+    <div class="quote-grid">
+      <div class="quote-card">
+        <p>"Deixei de adiar o trimestre do IVA para a última semana. O relatório já vem pronto."</p>
+        <div class="quote-who">— Designer freelancer</div>
+      </div>
+      <div class="quote-card">
+        <p>"Uso para os meus clientes independentes. Poupo horas de organização todos os meses."</p>
+        <div class="quote-who">— Contabilista</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Perguntas frequentes</p>
+      <h2>Antes de começar</h2>
+    </div>
+    <div class="faq-list">
+      <details>
+        <summary>Preciso de saber contabilidade para usar?</summary>
+        <p>Não. O sistema organiza os recibos e despesas nas categorias certas automaticamente — o relatório final é o que entrega ao seu contabilista ou submete diretamente.</p>
+      </details>
+      <details>
+        <summary>Posso cancelar quando quiser?</summary>
+        <p>Sim, a subscrição é mensal (ou anual, se escolher o desconto) e pode cancelar a qualquer momento sem multas.</p>
+      </details>
+      <details>
+        <summary>O relatório substitui o meu contabilista?</summary>
+        <p>Não necessariamente — muitos utilizadores usam o Recibo Certo para chegar organizados ao contabilista, poupando horas de trabalho manual todos os meses.</p>
+      </details>
+      <details>
+        <summary>Funciona só em Portugal?</summary>
+        <p>O sistema está pensado para o regime fiscal português (recibos verdes, IVA trimestral, IRS), mas as categorias podem ser adaptadas a outros regimes.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="final-cta">
+    <h2>Pare de deixar o relatório fiscal para a última hora</h2>
+    <p>Experimente e veja o seu primeiro relatório pronto em minutos.</p>
+    <button class="btn btn-primary" onclick="openModal('Profissional')">Começar agora</button>
+  </div>
+</section>
+
+<footer>
+  © 2026 Recibo Certo. Ferramenta de organização fiscal para trabalhadores independentes.
+</footer>
+
+<div class="modal-backdrop" id="modal-backdrop" onclick="if(event.target===this) closeModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" aria-label="Fechar" onclick="closeModal()">×</button>
+    <div id="modal-form-view">
+      <h3 id="modal-title">Começar com o plano</h3>
+      <span class="plan-tag" id="modal-plan">Profissional</span>
+      <form id="signup-form" onsubmit="submitSignup(event)">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" required placeholder="O seu nome">
+        <label for="email">Email</label>
+        <input type="email" id="email" required placeholder="voce@email.com">
+        <button type="submit" class="btn btn-primary">Criar conta</button>
+      </form>
+    </div>
+    <div class="confirm-box" id="confirm-box">
+      <div class="check">✓</div>
+      <h3>Conta a caminho!</h3>
+      <p style="color:var(--ink-soft); font-size:.9rem;">Enviámos os próximos passos para o seu email para ativar o plano <b id="confirm-plan"></b>.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var billingOn = false;
+  function toggleBilling(){
+    billingOn = !billingOn;
+    document.getElementById('billing-switch').classList.toggle('on', billingOn);
+    document.getElementById('label-mensal').classList.toggle('active', !billingOn);
+    document.getElementById('label-anual').classList.toggle('active', billingOn);
+    document.querySelectorAll('.price-num .val').forEach(function(el){
+      var v = billingOn ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
+      el.textContent = v + '€';
+    });
+  }
+
+  function openModal(plan){
+    document.getElementById('modal-plan').textContent = plan;
+    document.getElementById('modal-title').textContent = 'Começar com o plano';
+    document.getElementById('modal-backdrop').classList.add('open');
+    document.getElementById('modal-form-view').style.display = 'block';
+    document.getElementById('confirm-box').classList.remove('show');
+    document.getElementById('signup-form').reset();
+  }
+  function closeModal(){
+    document.getElementById('modal-backdrop').classList.remove('open');
+  }
+  function submitSignup(e){
+    e.preventDefault();
+    var plan = document.getElementById('modal-plan').textContent;
+    document.getElementById('confirm-plan').textContent = plan;
+    document.getElementById('modal-form-view').style.display = 'none';
+    document.getElementById('confirm-box').classList.add('show');
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeModal();
+  });
+
+  function copyIban(id, btn){
+    var text = document.getElementById(id).textContent.trim();
+    var done = function(){
+      var original = btn.textContent;
+      btn.textContent = 'Copiado';
+      btn.classList.add('copied');
+      setTimeout(function(){
+        btn.textContent = original;
+        btn.classList.remove('copied');
+      }, 1800);
+    };
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+  function fallbackCopy(text, done){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{ document.execCommand('copy'); done(); }catch(e){}
+    document.body.removeChild(ta);
+  }
+</script>
+
+</body>
+</html>
