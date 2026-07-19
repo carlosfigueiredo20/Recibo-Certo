@@ -536,7 +536,27 @@
     </div>
   </div>
 </div>
+//Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBkWYzHGVNoSWL3vjKo49LV6eBGFs89rCA",
+  authDomain: "recibo-certo-84922.firebaseapp.com",
+  projectId: "recibo-certo-84922",
+  storageBucket: "recibo-certo-84922.firebasestorage.app",
+  messagingSenderId: "176259030601",
+  appId: "1:176259030601:web:ee4c13b1b1bff26c03e998",
+  measurementId: "G-T5RVL2QP3W"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 <script>
   var billingOn = false;
   function toggleBilling(){
@@ -600,7 +620,7 @@
     try{ document.execCommand('copy'); done(); }catch(e){}
     document.body.removeChild(ta);
   }
-</script>
+<script>
 
 </body>
 </html>
